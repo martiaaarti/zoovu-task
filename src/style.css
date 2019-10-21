@@ -1,0 +1,33 @@
+.letter-card-size {
+    width: 220px;
+    height: 280px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+  }
+
+.card-spacing {
+  margin: 10px 10px 10px 10px;
+}
+
+.margin-alignment {
+  margin-left:  0px ;
+}
+
+.component-spacing {
+  margin:8px;
+}
+
+.slot-card-size {
+  width: 220px;
+  height: 280px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: rgb(212, 208, 208);
+}
+
+
+
+
+
+  
