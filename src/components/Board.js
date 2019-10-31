@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback } from 'react';
 import initialData from './initial-data';
 import { Col, Row, CardImg } from 'reactstrap';
 import Timer from "react-compound-timer";
@@ -20,53 +20,57 @@ function getRandomCard(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-class Board extends Component {
-  constructor(props) {
-    super(props);
+function Board(props) {
 
-    this.state = {
-      initialData
-    }
-  }
+  const [hiddenCard, setHiddenCard] = useState(initialData);
+  const [isFlipped, changeFlip] = useState([false, false, false, false, false]);
+  const [socketCard, setSocketCard] = useState(false, false, false, false, false);
+  const [randomCard, setRandomCard] = useState(null);
+  const [isGameFinished, setIsGameFinished] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState(false);
 
-  render() {
-    const shuffledArray = shuffleArray(this.state.initialData.cards);
-    const cardToFind = getRandomCard(this.state.initialData.cards);
-    const cardList = shuffledArray.map((card, index) => {
-      return <FlipComponent className="display-cards" key={index} card={card} />
-    });
-    return (
-      <Row className="margin-alignment">
-        <Col lg="8">
-          <h3 className="component-spacing">Pickup Cards</h3>
-          <Row className="component-spacing">
-            {cardList}
-          </Row>
-          <h3 className="component-spacing">Zovu Logo</h3>
-          <Row className="component-spacing">
-            <DropComponent />
-            <DropComponent />
-            <DropComponent />
-            <DropComponent />
-            <DropComponent />
-          </Row>
-        </Col>
-        <Col lg="4">
-          <Row className="display-timer">
-            <Timer>
-              <h3>Score: <Timer.Seconds /> seconds</h3>
-            </Timer>
-          </Row>
-          <Row>
-            <div>
-              <h3><u>Find this card</u></h3>
-              <CardImg className='letter-card-size' src={cardToFind.logoImg} alt="Zoovu letter card " />
-            </div>
-          </Row>
-        </Col>
-      </Row>
-    )
-  }
+  const handleCardFilpping = useCallback((event) => {
+    event.preventDefault()
+    changeFlip(!isFlipped)
+})
+
+  const shuffledArray = shuffleArray(hiddenCard.cards);
+  const cardToFind = getRandomCard(hiddenCard.cards);
+  const cardList = shuffledArray.map((card, index, isFlipped) => {
+    return <FlipComponent className="display-cards" key={index} card={card} handleCardFilpping={handleCardFilpping} isFlipped={isFlipped}/>
+  });
+  return (
+    <Row className="margin-alignment">
+      <Col lg="10">
+        <h3 className="component-spacing">Pickup Cards</h3>
+        <Row className="component-spacing">
+          {cardList}
+        </Row>
+        <h3 className="component-spacing">Zovu Logo</h3>
+        <Row className="component-spacing">
+          <DropComponent />
+          <DropComponent />
+          <DropComponent />
+          <DropComponent />
+          <DropComponent />
+        </Row>
+      </Col>
+      <Col lg="2">
+        <Row className="display-timer">
+          <Timer>
+            <h3>Score: <Timer.Seconds /> seconds</h3>
+          </Timer>
+        </Row>
+        <Row>
+          <div>
+            <h3><u>Find this card</u></h3>
+            <CardImg className='letter-card-size' src={cardToFind} alt="Zoovu letter card " />
+          </div>
+        </Row>
+      </Col>
+    </Row>
+  )
 }
+
 
 export default Board;
