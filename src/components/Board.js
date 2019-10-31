@@ -6,31 +6,13 @@ import FlipComponent from './FlipComponent';
 import DropComponent from './DropComponent';
 import RandomCard from './RandomCard';
 
-function shuffleArray(array) {
-  let i = array.length - 1;
-  for (; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-  return array;
-}
-
 function getRandomCard(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-const SEC = 1000;
-
 function Board() {
 
   const [hiddenCard, setHiddenCard] = useState(initialData);
-  useEffect(() => {
-    setHiddenCard(shuffleArray(hiddenCard));
-    console.log(hiddenCard);
-  }, [])
-
   const [isFlipped, changeFlip] = useState([false, false, false, false, false]);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -40,9 +22,11 @@ function Board() {
 
   const cardToFind = getRandomCard(hiddenCard);
 
-  const handleCardFilpping = useCallback((event) => {
+  const handleCardFilpping = useCallback((event, index) => {
+    console.log(index)
     event.preventDefault()
-    changeFlip(!isFlipped)
+    changeFlip(isFlipped[index] === true)
+    console.log(isFlipped[index])
   })
 
   function toggle() {
@@ -53,7 +37,7 @@ function Board() {
     setTimeout(() => {
       setSeconds(0);
       setIsActive(false);
-    }, 10 * SEC)
+    }, 10 * 1000)
   }
 
 
@@ -62,8 +46,8 @@ function Board() {
       <Col lg="10">
         <h3 className="component-spacing">Pickup Cards</h3>
         <Row className="component-spacing">
-          {hiddenCard.map((card, index, isFlipped) => {
-            return <FlipComponent className="display-cards" key={index} card={card} handleCardFilpping={handleCardFilpping} isFlipped={isFlipped} />
+          {hiddenCard.map((card, index) => {
+            return <FlipComponent className="display-cards" index={index} key={index} card={card} handleCardFilpping={handleCardFilpping} isFlipped={isFlipped[index]} />
           })}
         </Row>
         <h3 className="component-spacing">Zovu Logo</h3>

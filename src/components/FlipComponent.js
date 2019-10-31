@@ -1,16 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { CardImg } from 'reactstrap';
 import ReactCardFlip from 'react-card-flip';
 import { DragSource } from 'react-dnd-cjs';
 import ItemTypes from './ItemTypes';
 import questionMark from '../img/question.png';
 
-const FlipComponent = ({ card, isDragging, connectDragSource, isFlipped }, props) => {
+const FlipComponent = ({ card, isDragging, connectDragSource, isFlipped, index, handleCardFilpping }) => {
 
     function handleClick(event) {
-        props.handleCardFilpping(event)
+        handleCardFilpping(event,index)
     }
-    console.log("flip pomponent")
 
     return (
         <ReactCardFlip
