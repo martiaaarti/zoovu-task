@@ -6,15 +6,11 @@ import ItemTypes from './ItemTypes';
 import questionMark from '../img/question.png';
 
 const FlipComponent = ({ card, isDragging, connectDragSource, isFlipped }, props) => {
-    // const [isFlipped, changeFlip] = useState(false);
-    // const handleClick = useCallback((event) => {
-    //     event.preventDefault()
-    //     changeFlip(!isFlipped)
-    // })
 
     function handleClick(event) {
         props.handleCardFilpping(event)
     }
+    console.log("flip pomponent")
 
     return (
         <ReactCardFlip
@@ -32,7 +28,7 @@ const FlipComponent = ({ card, isDragging, connectDragSource, isFlipped }, props
     );
 };
 
-export default DragSource(
+export default React.memo(DragSource(
     ItemTypes.CARD,
     {
         beginDrag: () => ({}),
@@ -42,4 +38,4 @@ export default DragSource(
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging(),
     }),
-)(FlipComponent);
+)(FlipComponent));

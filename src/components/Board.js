@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import initialData from './initial-data';
-import { Col, Row, CardImg } from 'reactstrap';
-import Timer from "react-compound-timer";
+import { Col, Row } from 'reactstrap';
+import Timer from './Timer';
 import FlipComponent from './FlipComponent';
 import DropComponent from './DropComponent';
+import RandomCard from './RandomCard';
 
 function shuffleArray(array) {
   let i = array.length - 1;
@@ -20,31 +21,50 @@ function getRandomCard(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-function Board(props) {
+const SEC = 1000;
+
+function Board() {
 
   const [hiddenCard, setHiddenCard] = useState(initialData);
+  useEffect(() => {
+    setHiddenCard(shuffleArray(hiddenCard));
+    console.log(hiddenCard);
+  }, [])
+
   const [isFlipped, changeFlip] = useState([false, false, false, false, false]);
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
   const [socketCard, setSocketCard] = useState(false, false, false, false, false);
   const [randomCard, setRandomCard] = useState(null);
-  const [isGameFinished, setIsGameFinished] = useState(false);
-  const [isGameStarted, setIsGameStarted] = useState(false);
+
+
+  const cardToFind = getRandomCard(hiddenCard);
 
   const handleCardFilpping = useCallback((event) => {
     event.preventDefault()
     changeFlip(!isFlipped)
-})
+  })
 
-  const shuffledArray = shuffleArray(hiddenCard.cards);
-  const cardToFind = getRandomCard(hiddenCard.cards);
-  const cardList = shuffledArray.map((card, index, isFlipped) => {
-    return <FlipComponent className="display-cards" key={index} card={card} handleCardFilpping={handleCardFilpping} isFlipped={isFlipped}/>
-  });
+  function toggle() {
+    setIsActive(!isActive)
+  }
+
+  function reset() {
+    setTimeout(() => {
+      setSeconds(0);
+      setIsActive(false);
+    }, 10 * SEC)
+  }
+
+
   return (
     <Row className="margin-alignment">
       <Col lg="10">
         <h3 className="component-spacing">Pickup Cards</h3>
         <Row className="component-spacing">
-          {cardList}
+          {hiddenCard.map((card, index, isFlipped) => {
+            return <FlipComponent className="display-cards" key={index} card={card} handleCardFilpping={handleCardFilpping} isFlipped={isFlipped} />
+          })}
         </Row>
         <h3 className="component-spacing">Zovu Logo</h3>
         <Row className="component-spacing">
@@ -57,14 +77,12 @@ function Board(props) {
       </Col>
       <Col lg="2">
         <Row className="display-timer">
-          <Timer>
-            <h3>Score: <Timer.Seconds /> seconds</h3>
-          </Timer>
+          <Timer seconds={seconds} isActive={isActive} toggle={toggle} reset={reset} setSeconds={setSeconds} />
         </Row>
         <Row>
           <div>
             <h3><u>Find this card</u></h3>
-            <CardImg className='letter-card-size' src={cardToFind} alt="Zoovu letter card " />
+            <RandomCard cardToFind={cardToFind} />
           </div>
         </Row>
       </Col>

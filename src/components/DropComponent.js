@@ -10,4 +10,4 @@ const DropComponent = () => {
 
 }
 
-export default DropComponent
+export default React.memo(DropComponent);
