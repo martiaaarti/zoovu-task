@@ -1,40 +1,52 @@
 import React from 'react';
 import { CardImg } from 'reactstrap';
 import ReactCardFlip from 'react-card-flip';
-import { DragSource } from 'react-dnd-cjs';
-import ItemTypes from './ItemTypes';
+import { useDrag } from 'react-dnd-cjs';
 import questionMark from '../img/question.png';
 
-const FlipComponent = ({ card, isDragging, connectDragSource, isFlipped, index, handleCardFilpping }) => {
+const FlipComponent = ({ card, isFlipped, id, handleDrop }) => {
+    const [{ isDragging }, drag] = useDrag({
+        item: {id: id, type: "CARD" },
+        begin: (card) => {
+            console.log('dragging')
+            return card
+        },
+        end: (monitor) => {
+            if(!monitor.didDrop()) {
+                return;
+            }
+            return handleDrop(id)
+        },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging()
+        })
+    });
+    const opacity = isDragging ? 0 : 1;
 
-    function handleClick(event) {
-        handleCardFilpping(event,index)
-    }
+    // function handleClick(event) {
+    //     handleCardFilpping(event,index)
+    // }
 
     return (
+        <span ref={drag} style={{ opacity }}>
         <ReactCardFlip
             isFlipped={isFlipped}
             flipDirection="horizontal"
         >
-            <span key="front" onClick={handleClick}>
+            <span key="front" 
+            // onClick={handleClick}
+            >
                 <CardImg className='letter-card-size card-spacing' src={questionMark} alt=" Questionmark " />
             </span>
 
-            <span key="back" onClick={handleClick}>
+            <span key="back" 
+            // onClick={handleClick}
+            >
                 <CardImg className='letter-card-size card-spacing' src={card} alt="Zoovu letter card " />
             </span>
         </ReactCardFlip>
+        </span>        
     );
 };
 
-export default React.memo(DragSource(
-    ItemTypes.CARD,
-    {
-        beginDrag: () => ({}),
-        endDrag: () => ({})
-    },
-    (connect, monitor) => ({
-        connectDragSource: connect.dragSource(),
-        isDragging: monitor.isDragging(),
-    }),
-)(FlipComponent));
+export default React.memo(FlipComponent);

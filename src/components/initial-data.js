@@ -16,6 +16,12 @@ function shuffleArray(array) {
     return array;
   }
 
-const initialData = shuffleArray([Z, O, O2, V, U]);
+const initialData = shuffleArray([
+  { id: 1, img: Z },
+  { id: 2, img: O },
+  { id: 3, img: O2 },
+  { id: 4, img: V },
+  { id: 5, img: U }
+]);
 
 export default initialData;

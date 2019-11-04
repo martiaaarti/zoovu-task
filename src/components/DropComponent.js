@@ -1,11 +1,22 @@
 import React from 'react';
-import { DropTarget } from 'react-dnd-cjs';
-import ItemTypes from './ItemTypes';
-import { Card } from 'reactstrap';
+import { useDrop } from 'react-dnd-cjs';
+import { CardImg } from 'reactstrap';
 
 const DropComponent = () => {
+    const [{ hovered, canDrop }, drop] = useDrop({
+        accept: "CARD",
+        collect: monitor => {
+            return {
+              hovered: monitor.isOver(),
+              item: monitor.getItem()
+            };
+          }      
+    })
+    const backgroundColor = hovered ? 'grey' : 'white';
     return (
-        <Card className="slot-card-size" />
+        <span ref={drop} style={{backgroundColor}}>
+        <CardImg className="slot-card-size"  />
+        </span>
     )
 
 }
