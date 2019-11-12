@@ -16,12 +16,14 @@ function shuffleArray(array) {
     return array;
   }
 
-const initialData = shuffleArray([
+  export const zoovuLogoCards = [
   { id: 1, img: Z },
   { id: 2, img: O },
   { id: 3, img: O2 },
   { id: 4, img: V },
   { id: 5, img: U }
-]);
+]
 
-export default initialData;
+export const initialData = shuffleArray(zoovuLogoCards);
+
+

@@ -2,20 +2,29 @@ import React from 'react';
 import { useDrop } from 'react-dnd-cjs';
 import { CardImg } from 'reactstrap';
 
-const DropComponent = () => {
-    const [{ hovered, canDrop }, drop] = useDrop({
+function checkIfCanDrop(item, selectedCard) {
+    const img = item.img;
+    if (img === selectedCard){
+        return true;
+    }
+    return false;
+  }
+
+const DropComponent = ({droppedImg, onDrop, randomCard}) => {
+    const [{ hovered }, drop] = useDrop({
         accept: "CARD",
-        collect: monitor => {
-            return {
+        canDrop: (item) => checkIfCanDrop(item, randomCard),
+        drop: onDrop,
+        collect: monitor => ({             
               hovered: monitor.isOver(),
-              item: monitor.getItem()
-            };
-          }      
+              item: monitor.getItem()             
+            })
     })
+
     const backgroundColor = hovered ? 'grey' : 'white';
     return (
         <span ref={drop} style={{backgroundColor}}>
-        <CardImg className="slot-card-size"  />
+        <CardImg className="slot-card-size" src={droppedImg} />
         </span>
     )
 
