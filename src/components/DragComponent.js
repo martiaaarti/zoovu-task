@@ -3,7 +3,7 @@ import { CardImg } from 'reactstrap';
 import { useDrag } from 'react-dnd-cjs';
 import questionMark from '../img/question.png';
 
-const DragComponent = ({ id, handleDrop, img, timeStart, randomCard }) => {
+const DragComponent = ({ id, handleDrop, img, timeStart, randomCard, handlePenaltySeconds }) => {
     const [{ isDragging }, drag] = useDrag({
         item: { img, type: "CARD" },
         begin: () => (timeStart()),
@@ -11,6 +11,7 @@ const DragComponent = ({ id, handleDrop, img, timeStart, randomCard }) => {
             if (randomCard === id) {
                 handleDrop(id)
             }
+            handlePenaltySeconds()
             return item;
         },
         collect: (monitor) => ({

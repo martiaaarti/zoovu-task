@@ -54,6 +54,11 @@ function Board() {
     },
     [cardSocket]);
 
+  const handlePenaltySeconds = useCallback(
+    () => {
+      setSeconds(prevState => prevState + 10)
+    },[seconds])
+
   const resetCallback = useCallback(() => {
     setHiddenCard(initialData)
     setRandomCard({})
@@ -99,6 +104,7 @@ function Board() {
               timeStart={timeStart}
               randomCard={randomCard.id}
               handleDrop={(id) => deleteItem(id)}
+              handlePenaltySeconds={handlePenaltySeconds}
             />
           })}
         </Row>
