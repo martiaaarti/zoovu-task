@@ -7,4 +7,4 @@ function RandomCard({randomCard}) {
     )
 }
 
-export default React.memo(RandomCard);
+export default RandomCard;

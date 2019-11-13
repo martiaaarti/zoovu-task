@@ -14,59 +14,28 @@ function Board() {
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [cardSocket, setCardSocket] = useState([{ droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }])
-  const [droppedCard, setDroppedCard] = useState([]);
 
-  function getRandomCard(array){
+  function getRandomCard(array) {
     return array[Math.floor(Math.random() * array.length)]
   }
 
-  useEffect(() => {
-    setRandomCard(getRandomCard(zoovuLogoCards))
-  }, [])
+  function timeStart() {
+    setIsActive(true)
+  }
 
-  useEffect(() => {
-    let interval = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, seconds]);
-
-  useEffect(() => {
-    if (hiddenCard.length === 0) {
-      alert(`Congrats, you completed the game in ${seconds}s!`)
-      setTimeout(() => {
-        setHiddenCard(initialData);
-        setSeconds(0);
-        setIsActive(false);
-        setCardSocket([{ droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }]);
-        setRandomCard(getRandomCard(zoovuLogoCards));
-        setDroppedCard([])
-      }, 10 * 1000)
-    }
-  },[hiddenCard, seconds, isActive, cardSocket, randomCard, droppedCard]);
+  function resetApp() {
+    return new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
+  }
 
   const deleteItem = useCallback((id) => {
-    setHiddenCard(
-      hiddenCard.filter(card => card.id !== id)
-    )
+    const updatedSetOfCards = hiddenCard.filter(currCard => currCard.id !== id)
+    setHiddenCard(updatedSetOfCards)
+    const selectedCard = getRandomCard(updatedSetOfCards)
+    setRandomCard(selectedCard)
     console.log(hiddenCard)
-    if (droppedCard.length === 0) {
-      setDroppedCard(droppedCard.push(id))
-    } else {
-      setDroppedCard([...droppedCard, id])
-    }
-    console.log(droppedCard, droppedCard.length)
-    setRandomCard(
-      getRandomCard(zoovuLogoCards.filter( el => !droppedCard.includes(el.id)))
-    )
-    console.log(zoovuLogoCards.filter( el => !droppedCard.includes(el.id)), getRandomCard(zoovuLogoCards.filter( el => !droppedCard.includes(el.id))))
-  },
-    [hiddenCard, droppedCard]
-  )
-
+  }, [hiddenCard]);
 
   const handleDrop = useCallback(
     (index, item) => {
@@ -83,13 +52,39 @@ function Board() {
         )
       )
     },
-    [cardSocket]
-  );
+    [cardSocket]);
 
-  function toggle() {
-    setIsActive(true)
-  }
-  
+  const resetCallback = useCallback(() => {
+    setHiddenCard(initialData)
+    setRandomCard({})
+    setSeconds(0)
+    setIsActive(false)
+    setCardSocket([{ droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }])
+  }, [initialData])
+
+  useEffect(() => {
+    setRandomCard(getRandomCard(zoovuLogoCards))
+    return () => { }
+  }, [])
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds(seconds => seconds + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  useEffect(() => {
+    if (hiddenCard.length === 0) {
+      if (confirm(`Congrats, you completed the game in ${seconds}s!`)) {
+        //Code to restart app
+      }
+    }
+  }, [hiddenCard]);
+
   return (
     <Row className="margin-alignment">
       <Col lg="10">
@@ -101,7 +96,7 @@ function Board() {
               id={id}
               key={index}
               img={img}
-              toggle={toggle}
+              timeStart={timeStart}
               randomCard={randomCard.id}
               handleDrop={(id) => deleteItem(id)}
             />
@@ -110,18 +105,18 @@ function Board() {
         <h3 className="component-spacing">Zovu Logo</h3>
         <Row className="component-spacing">
           {cardSocket.map(({ droppedImg }, index) => (
-            <DropComponent 
-            key={index} 
-            onDrop={item => handleDrop(index, item)} 
-            droppedImg={droppedImg} 
-            randomCard={randomCard.img} 
+            <DropComponent
+              key={index}
+              onDrop={item => handleDrop(index, item)}
+              droppedImg={droppedImg}
+              randomCard={randomCard.img}
             />
           ))}
         </Row>
       </Col>
       <Col lg="2">
         <Row className="display-timer">
-          <Timer seconds={seconds} isActive={isActive} toggle={toggle} setSeconds={setSeconds} />
+          <Timer seconds={seconds} isActive={isActive} setSeconds={setSeconds} />
         </Row>
         <Row>
           <div>
