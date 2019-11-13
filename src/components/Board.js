@@ -7,14 +7,22 @@ import DropComponent from './DropComponent';
 import RandomCard from './RandomCard';
 import update from 'immutability-helper';
 
+
 function Board() {
-  const getRandomCard = (array) => array[Math.floor(Math.random() * array.length)]
   const [hiddenCard, setHiddenCard] = useState(initialData);
+  const [randomCard, setRandomCard] = useState({});
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [cardSocket, setCardSocket] = useState([{ droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }])
-  const [randomCard, setRandomCard] = useState(getRandomCard(zoovuLogoCards));
   const [droppedCard, setDroppedCard] = useState([]);
+
+  function getRandomCard(array){
+    return array[Math.floor(Math.random() * array.length)]
+  }
+
+  useEffect(() => {
+    setRandomCard(getRandomCard(zoovuLogoCards))
+  }, [])
 
   useEffect(() => {
     let interval = null;
@@ -22,29 +30,39 @@ function Board() {
       interval = setInterval(() => {
         setSeconds(seconds => seconds + 1);
       }, 1000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval);
-    } else if (hiddenCard.length === 1) {
-      alert('Game is over! New game will start in 10s.')
-      setTimeout(() => {
-        setSeconds(0);
-        setIsActive(false);
-      }, 10 * 1000)
     }
     return () => clearInterval(interval);
-  }, [isActive, seconds, hiddenCard]);
+  }, [isActive, seconds]);
+
+  useEffect(() => {
+    if (hiddenCard.length === 0) {
+      alert(`Congrats, you completed the game in ${seconds}s!`)
+      setTimeout(() => {
+        setHiddenCard(initialData);
+        setSeconds(0);
+        setIsActive(false);
+        setCardSocket([{ droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }, { droppedImg: null }]);
+        setRandomCard(getRandomCard(zoovuLogoCards));
+        setDroppedCard([])
+      }, 10 * 1000)
+    }
+  },[hiddenCard, seconds, isActive, cardSocket, randomCard, droppedCard]);
 
   const deleteItem = useCallback((id) => {
-    setDroppedCard(
-      update(droppedCard, { $push: [id] }),
-    )
     setHiddenCard(
       hiddenCard.filter(card => card.id !== id)
     )
+    console.log(hiddenCard)
+    if (droppedCard.length === 0) {
+      setDroppedCard(droppedCard.push(id))
+    } else {
+      setDroppedCard([...droppedCard, id])
+    }
+    console.log(droppedCard, droppedCard.length)
     setRandomCard(
-      getRandomCard(hiddenCard)
+      getRandomCard(zoovuLogoCards.filter( el => !droppedCard.includes(el.id)))
     )
-    console.log(droppedCard, hiddenCard)
+    console.log(zoovuLogoCards.filter( el => !droppedCard.includes(el.id)), getRandomCard(zoovuLogoCards.filter( el => !droppedCard.includes(el.id))))
   },
     [hiddenCard, droppedCard]
   )
@@ -71,7 +89,6 @@ function Board() {
   function toggle() {
     setIsActive(true)
   }
-
   
   return (
     <Row className="margin-alignment">
